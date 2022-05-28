@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  produtos-mysql:
+    image: "mysql:latest"
+    container_name: "produtos-mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "produtos"
+  produtos-app:
+    image: "produtos-mysql-app"
+    container_name: "produtos-mysql-app-intance"
+    ports: 
+      - 8081:8081
+    depends_on:
+      - produtos-mysql
+  carrinho-mongo:
+    image: "mongo:latest"
+    container_name: "carrinho-mongo"
+    ports:
+      - 27017:27017
+  carrinho-app:
+    image: "carrinho-mongo-app"
+    container_name: "carrinho-mongo-app-instance"
+    ports:
+      - 8082:8082
+    depends_on:
+      - carrinho-mongo
+
