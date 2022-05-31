@@ -17,6 +17,23 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
+
+    testImplementation('com.squareup.okhttp3:mockwebserver:4.9.0') {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
+
+    //Disponibilizar endpoints com o path -> actuator.
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.9.0'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:3.1.2'
+
+    // Feign reativo
+    implementation 'com.playtika.reactivefeign:feign-reactor-core:3.2.1'
+    implementation 'com.playtika.reactivefeign:feign-reactor-spring-configuration:3.2.1'
+    implementation 'com.playtika.reactivefeign:feign-reactor-webclient:3.2.1'
 }
 
 tasks.named('test') {

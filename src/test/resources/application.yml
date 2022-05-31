@@ -1,0 +1,2 @@
+cart:
+  url: "http://cart-service:9000/v1/api/cart/%s"

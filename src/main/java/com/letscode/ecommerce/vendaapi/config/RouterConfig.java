@@ -16,7 +16,9 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> route(SaleHandler saleHandler) {
         return RouterFunctions
-                .route(GET("/v1/api/sale").and(contentType(APPLICATION_JSON)), saleHandler::list)
-                .andRoute(POST("v1//api/sale").and(contentType(APPLICATION_JSON)), saleHandler::create);
+                .route(GET("/v1/api/sales"), saleHandler::list)
+                .andRoute(GET("/v1/api/sale/{id}"), saleHandler::get)
+                .andRoute(POST("/v1/api/sale").and(contentType(APPLICATION_JSON)), saleHandler::create);
     }
+
 }

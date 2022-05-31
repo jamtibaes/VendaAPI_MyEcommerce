@@ -1,11 +1,44 @@
 version: "3.9"
+
 services:
+  
+  usuario-postgres:
+    image: postgres
+    container_name: "usuario-postgres"
+    environment:
+      POSTGRES_PASSWORD: "Postgres123!"
+      POSTGRES_DB: "mydb"
+    ports:
+      - 5432:5432
+    networks:
+      services-network-01:
+        aliases:
+          - usuario-postgres
+  
+  usuario-app:
+    image: "usuario-postgres-app"
+    container_name: "usuario-postgres-app-instance"
+    ports:
+      - 8080:8080
+    depends_on:
+      - usuario-postgres
+      - eureka-server
+    networks:
+      services-network-01:
+        aliases:
+          - user-service
+
   produtos-mysql:
     image: "mysql:latest"
     container_name: "produtos-mysql"
     environment:
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_DATABASE: "produtos"
+    networks:
+      services-network-01:
+        aliases:
+          - produtos-mysql
+  
   produtos-app:
     image: "produtos-mysql-app"
     container_name: "produtos-mysql-app-intance"
@@ -13,11 +46,23 @@ services:
       - 8081:8081
     depends_on:
       - produtos-mysql
+      - eureka-server
+    networks:
+      services-network-01:
+        aliases:
+          - product-service
+          
+  
   carrinho-mongo:
     image: "mongo:latest"
     container_name: "carrinho-mongo"
     ports:
       - 27017:27017
+    networks:
+      services-network-01:
+        aliases:
+          - carrinho-mongo
+
   carrinho-app:
     image: "carrinho-mongo-app"
     container_name: "carrinho-mongo-app-instance"
@@ -25,4 +70,70 @@ services:
       - 8082:8082
     depends_on:
       - carrinho-mongo
+      - eureka-server
+    networks:
+      services-network-01:
+        aliases:
+          - cart-service
 
+  vendas-mongo:
+    image: "mongo:latest"
+    command: mongod --port 27018
+    container_name: "vendas-mongo"
+    hostname: "vendas-mongo"
+    restart: always
+    ports:
+      - 27018:27018
+    networks:
+      services-network-01:
+        aliases:
+          - vendas-mongo
+
+  vendas-app:
+    image: "vendas-mongo-app"
+    container_name: "vendas-mongo-app-instance"
+    ports:
+      - 8083:8083
+    depends_on:
+      - vendas-mongo
+      - eureka-server
+    networks:
+      services-network-01:
+        aliases:
+          - sales-service
+
+  prometheus-app:
+    image: "prometheus-app"
+    container_name: "prometheus-app"
+    ports:
+      - "9090:9090"
+    networks:
+      services-network-01:
+        aliases:
+          - prometheus-server
+#    volumes:
+#      - C:/Temp/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - ./prometheus_data:/prometheus_data
+#      - c:/Temp/prometheus.yml/:/etc/prometheus/prometheus.yml
+#      - prometheus_data:/prometheus
+#      - ./prometheus/:/etc/prometheus
+#      - ./prometheus_data:/prometheus
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus_data'
+#      - '--storage.tsdb.path=/prometheus'
+  
+  eureka-server:
+    image: "eureka-server"
+    ports:
+      - "8761:8761"
+    container_name: "eureka-server"
+    networks:
+      services-network-01:
+        aliases:
+          - eureka-server
+
+networks:
+  services-network-01:
+    name: services-network-01
+    driver: bridge
